@@ -1,0 +1,17 @@
+@font-face {
+  font-family: 'IBMPlexSans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('assets/fonts/IBMPlexSans-Regular.ttf')
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'IBMPlexSans', sans-serif;
+
+  .app {
+    max-width: 1000px;
+    margin: 50px auto 0;
+  }
+}
