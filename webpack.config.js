@@ -2,6 +2,7 @@ const path = require("path");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const CopyPlugin = require('copy-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const mode = process.env.NODE_ENV || 'development';
 
@@ -9,13 +10,16 @@ module.exports = {
   mode: mode,
   entry: "./src/index.js",
   output: {
-    assetModuleFilename: "images/[hash][ext][query]",
+    assetModuleFilename: "media/[hash][ext][query]",
     path: path.resolve(__dirname, 'build'),
     filename: "[name].[hash].js",
     chunkFilename: '[id].[chunkhash].js'
   },
   devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',
   devServer: {
+    headers: {
+      'header-webpack': 'webpack', // Adds headers to all responses:
+    },
     hot: true,
   },
   resolve: {
@@ -34,7 +38,8 @@ module.exports = {
           options: {
             presets: ["@babel/preset-env", ["@babel/preset-react", {
               runtime: "automatic"
-            }]]
+            }]],
+            plugins: ["react-refresh/babel"]
           }
         }
       },
@@ -52,7 +57,7 @@ module.exports = {
       },
       {
         test: /\.(ttf|woff|woff2)$/,
-        use: 'file-loader'
+        type: "asset/resource"
       },
       {
         test: /\.xml$/,
@@ -79,7 +84,9 @@ module.exports = {
     new HtmlWebPackPlugin({
       template: "./public/index.html"
     }),
-
+    new ReactRefreshWebpackPlugin({
+      overlay: false,
+    }),
     new CleanWebpackPlugin()
   ]
 };
