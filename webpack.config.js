@@ -5,6 +5,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const mode = process.env.NODE_ENV || 'development';
+const isDev = mode === 'development';
 
 module.exports = {
   mode: mode,
@@ -15,7 +16,7 @@ module.exports = {
     filename: "[name].[hash].js",
     chunkFilename: '[id].[chunkhash].js'
   },
-  devtool: process.env.NODE_ENV === 'production' ? false : 'source-map',
+  devtool: isDev ? 'source-map' : false,
   devServer: {
     headers: {
       'header-webpack': 'webpack', // Adds headers to all responses:
@@ -39,7 +40,7 @@ module.exports = {
             presets: ["@babel/preset-env", ["@babel/preset-react", {
               runtime: "automatic"
             }]],
-            plugins: ["react-refresh/babel"]
+            plugins: isDev ? ["react-refresh/babel"] : []
           }
         }
       },
