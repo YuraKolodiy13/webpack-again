@@ -6,7 +6,7 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const ImageminWebpack = require("imagemin-webpack");
+const ImageminPlugin = require("imagemin-webpack");
 
 const mode = process.env.NODE_ENV || 'development';
 const isDev = mode === 'development';
@@ -15,15 +15,6 @@ const filename = ext => isDev ? `./${ext}/[name].${ext}` : `./${ext}/[name].[has
 
 const getPlugins = () => {
   const plugins = [
-    new ImageminWebpack({
-      bail: false, // Ignore errors on corrupted images
-      cache: false,
-      imageminOptions: {
-        plugins: ["gifsicle"]
-      },
-      // Disable `loader`
-      loader: false
-    }),
     new CopyPlugin({
       patterns: [
         {
@@ -48,7 +39,29 @@ const getPlugins = () => {
     // new CleanWebpackPlugin()
   ];
 
-
+  if(!isDev){
+    plugins.push(new ImageminPlugin({
+      bail: false, // Ignore errors on corrupted images
+      cache: true,
+      imageminOptions: {
+        plugins: [
+          ["gifsicle", { interlaced: true }],
+          ["jpegtran", { progressive: true }],
+          ["optipng", { optimizationLevel: 5 }],
+          [
+            "svgo",
+            {
+              plugins: [
+                {
+                  removeViewBox: false
+                }
+              ]
+            }
+          ]
+        ]
+      }
+    }))
+  }
 
   return plugins
 };
