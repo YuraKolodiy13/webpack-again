@@ -3,25 +3,82 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const CopyPlugin = require('copy-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const ImageminWebpack = require("imagemin-webpack");
 
 const mode = process.env.NODE_ENV || 'development';
 const isDev = mode === 'development';
 
+const filename = ext => isDev ? `./${ext}/[name].${ext}` : `./${ext}/[name].[hash].${ext}`;
+
+const getPlugins = () => {
+  const plugins = [
+    new ImageminWebpack({
+      bail: false, // Ignore errors on corrupted images
+      cache: false,
+      imageminOptions: {
+        plugins: ["gifsicle"]
+      },
+      // Disable `loader`
+      loader: false
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'public'),
+          globOptions: {
+            ignore: ["**/index.html"],
+          },
+          to: path.resolve(__dirname, 'build')
+        }
+      ]
+    }),
+    new HtmlWebPackPlugin({
+      template: "./public/index.html",
+      minify: {
+        collapseWhitespace: !isDev,
+      },
+    }),
+    new ReactRefreshWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      filename: filename('css')
+    }),
+    // new CleanWebpackPlugin()
+  ];
+
+
+
+  return plugins
+};
+
 module.exports = {
   mode: mode,
+  target: "web",
   entry: "./src/index.js",
   output: {
     assetModuleFilename: "media/[hash][ext][query]",
     path: path.resolve(__dirname, 'build'),
-    filename: "[name].[hash].js",
-    chunkFilename: '[id].[chunkhash].js'
+    filename: filename('js'),
+    chunkFilename: '[id].[chunkhash].js',
+    clean: true
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    },
+    minimizer: isDev ? [] : [new OptimizeCssAssetsPlugin(), new TerserPlugin()]
   },
   devtool: isDev ? 'source-map' : false,
   devServer: {
     headers: {
       'header-webpack': 'webpack', // Adds headers to all responses:
     },
-    hot: true,
+    historyApiFallback: true,
+    open: true,
+    compress: true,
+    hot: true
   },
   resolve: {
     extensions: ['.js', '.jsx'],
@@ -46,11 +103,11 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
       },
       {
         test: /\.(scss|sass)$/,
-        use: ['style-loader', 'css-loader', 'sass-loader']
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader']
       },
       {
         test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.svg$/],
@@ -70,24 +127,5 @@ module.exports = {
       },
     ]
   },
-  plugins: [
-    new CopyPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, 'public'),
-          globOptions: {
-            ignore: ["**/index.html"],
-          },
-          to: path.resolve(__dirname, 'build')
-        }
-      ]
-    }),
-    new HtmlWebPackPlugin({
-      template: "./public/index.html"
-    }),
-    new ReactRefreshWebpackPlugin({
-      overlay: false,
-    }),
-    new CleanWebpackPlugin()
-  ]
+  plugins: getPlugins()
 };
