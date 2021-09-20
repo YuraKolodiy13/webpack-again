@@ -39,29 +39,29 @@ const getPlugins = () => {
     // new CleanWebpackPlugin()
   ];
 
-  if(!isDev){
-    plugins.push(new ImageminPlugin({
-      bail: false, // Ignore errors on corrupted images
-      cache: true,
-      imageminOptions: {
-        plugins: [
-          ["gifsicle", { interlaced: true }],
-          ["jpegtran", { progressive: true }],
-          ["optipng", { optimizationLevel: 5 }],
-          [
-            "svgo",
-            {
-              plugins: [
-                {
-                  removeViewBox: false
-                }
-              ]
-            }
-          ]
-        ]
-      }
-    }))
-  }
+  // if(!isDev){
+  //   plugins.push(new ImageminPlugin({
+  //     bail: false, // Ignore errors on corrupted images
+  //     cache: true,
+  //     imageminOptions: {
+  //       plugins: [
+  //         ["gifsicle", { interlaced: true }],
+  //         ["jpegtran", { progressive: true }],
+  //         ["optipng", { optimizationLevel: 5 }],
+  //         [
+  //           "svgo",
+  //           {
+  //             plugins: [
+  //               {
+  //                 removeViewBox: false
+  //               }
+  //             ]
+  //           }
+  //         ]
+  //       ]
+  //     }
+  //   }))
+  // }
 
   return plugins
 };
@@ -81,6 +81,7 @@ module.exports = {
     splitChunks: {
       chunks: 'all'
     },
+    minimize: true,
     minimizer: isDev ? [] : [new OptimizeCssAssetsPlugin(), new TerserPlugin()]
   },
   devtool: isDev ? 'source-map' : false,

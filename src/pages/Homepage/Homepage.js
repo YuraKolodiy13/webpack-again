@@ -1,5 +1,6 @@
 import AdditionalBlock from "@/components/AdditionalBlock";
 import excelIcon from "@/assets/images/excel.svg";
+import img from "@/assets/images/img.jpeg";
 import csvFile from "@/assets/files/export.csv";
 
 const Homepage = () => {
@@ -8,6 +9,7 @@ const Homepage = () => {
       <AdditionalBlock/>
       eqwefd22222222222sfdsdddffffwer wer werwerewrew
       fffff321321
+      <img src={img} alt=""/>
       <img src={excelIcon} alt=""/>
       <img src={excelIcon} alt=""/>
       <img src={excelIcon} alt=""/>
