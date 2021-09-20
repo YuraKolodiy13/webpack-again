@@ -6,7 +6,7 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const ImageminPlugin = require("imagemin-webpack");
+const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
 
 const mode = process.env.NODE_ENV || 'development';
 const isDev = mode === 'development';
@@ -39,29 +39,29 @@ const getPlugins = () => {
     // new CleanWebpackPlugin()
   ];
 
-  // if(!isDev){
-  //   plugins.push(new ImageminPlugin({
-  //     bail: false, // Ignore errors on corrupted images
-  //     cache: true,
-  //     imageminOptions: {
-  //       plugins: [
-  //         ["gifsicle", { interlaced: true }],
-  //         ["jpegtran", { progressive: true }],
-  //         ["optipng", { optimizationLevel: 5 }],
-  //         [
-  //           "svgo",
-  //           {
-  //             plugins: [
-  //               {
-  //                 removeViewBox: false
-  //               }
-  //             ]
-  //           }
-  //         ]
-  //       ]
-  //     }
-  //   }))
-  // }
+  if(!isDev){
+    plugins.push(new ImageMinimizerPlugin({
+      minimizerOptions: {
+        // Lossless optimization with custom option
+        // Feel free to experiment with options for better result for you
+        plugins: [
+          ['gifsicle', { interlaced: true }],
+          ['jpegtran', { progressive: true }],
+          ['optipng', { optimizationLevel: 5 }],
+          [
+            'svgo',
+            {
+              plugins: [
+                {
+                  removeViewBox: false,
+                },
+              ],
+            },
+          ],
+        ],
+      },
+    }))
+  }
 
   return plugins
 };
