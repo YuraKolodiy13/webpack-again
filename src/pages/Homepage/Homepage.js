@@ -2,11 +2,14 @@ import AdditionalBlock from "@/components/AdditionalBlock";
 import excelIcon from "@/assets/images/excel.svg";
 import img from "@/assets/images/img.jpeg";
 import csvFile from "@/assets/files/export.csv";
+import useInput from "@/hooks/useInput";
 
 const Homepage = () => {
+  const inputValue = useInput()
   return (
     <div className='Homepage'>
       <AdditionalBlock/>
+      <input type="text" {...inputValue}/>
       eqwefd22222222222sfdsdddffffwer wer werwerewrew
       fffff321321
       <img src={img} alt=""/>
